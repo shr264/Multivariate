@@ -1,0 +1,157 @@
+% HW2 high dimensional data
+
+\documentclass[12pt, leqno]{article}
+\usepackage{amsfonts, amsmath, amssymb}
+\usepackage{amsthm}
+\usepackage{mathtools}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{mathrsfs}
+\usepackage{array} 
+\usepackage{rotating}
+%\usepackage{babel}
+\providecommand{\abs}[1]{\lvert#1\rvert}
+\providecommand{\norm}[1]{\lVert#1\rVert}
+\newcommand{\macheps}{\epsilon_{\mbox{\scriptsize mach}}}
+\let\oldhat\hat
+\renewcommand{\vec}[1]{\mathbf{#1}}
+\renewcommand{\hat}[1]{\oldhat{{#1}}}
+\def\rp{\ensuremath \mathbb{R}^p}
+\def\rpp{\ensuremath \mathbb{R}^{p \times p}}
+\def\s{\ensuremath\Sigma}
+\def\om{\ensuremath\Omega}
+\def\pd{\ensuremath\mathbb{P}^+}
+\def\pg{\ensuremath\mathbb{P}_{{G}}}
+\def\E{\ensuremath\mathbb{E}}
+\def\normdist[#1]#2{\ensuremath \sim \mathcal{N} (#1,#2) }
+\def\ndist1{\ensuremath \sim \mathcal{N}  (\mu, \sigma)}
+\def\ndistvec{\ensuremath \sim \mathcal{N}_p ( {\mu},  {\Sigma})}
+\def\lra{\ensuremath\Leftrightarrow}
+\def\stackrel#1#2{\mathrel{\mathop{#2}\limits^{#1}}}
+\newcommand\ind{\protect\mathpalette{\protect\independenT}{\perp}}
+\def\independenT#1#2{\mathrel{\rlap{$#1#2$}\mkern2mu{#1#2}}}
+\makeatletter
+\newtheorem{thm}{Theorem}[]
+\newtheorem{lemma}{Lemma}[]
+\newtheorem{defn}[thm]{Definition}
+\newcommand{\sign}{\mathrm{sign}}
+\newcommand{\distas}[1]{\mathbin{\overset{#1}{\kern\z@\sim}}}%
+\newsavebox{\mybox}\newsavebox{\mysim}
+\newcommand{\dist}[1]{%
+  \savebox{\mybox}{\hbox{\kern3pt$\scriptstyle#1$\kern3pt}}%
+  \savebox{\mysim}{\hbox{$\sim$}}%
+  \mathbin{\overset{#1}{\kern\z@\resizebox{\wd\mybox}{\ht\mysim}{$\sim$}}}%
+}
+\makeatother
+
+\begin{document}
+\pagestyle{fancy}
+\lhead{Syed Rahman}
+\rhead{STA6707}
+
+\begin{center}
+{\large {\bf Homework 2 - Solutions to Homework 1}} \\
+{\it{Syed Rahman}} \\
+\end{center}
+
+\paragraph{Problem 1:}
+
+The data set USTATES-data.txt (available in the folder Data Sets) contains the unemployment rates of the 50 US States, plus those of the District of Columbia and Puerto Rico for the period Jan 1976- March 2007.
+Use PCA analysis to summarize the basic patterns in the data and carefully comment on the results.
+Specifically, discuss in your report possible transformations of the variables, exclusion of outliers, choice of number of principal components, fit of the solution, interpretation of the principal components.
+
+\paragraph{Solution 1:}
+In this problem, we note that $p >> n$. One approach is to
+transpose the data, however, this is ultimately incorrect as it would
+be harder to justify the $X_i \stackrel{iid}{\sim} \mathcal{N}_p (
+{\mu},  {\Sigma})$ assumption of PCA. Instead we use an SVD based function to
+perform PCA. Doing the analysis with and without PR in addition to the
+following in Figures \ref{fig:p1a} and \ref{fig:p1b} indicates that it is an outlier and that it should be left out of the final analysis. 
+<<>>=
+data1 = read.table("USTATES-data-1.txt", header=TRUE)
+data0 = as.matrix(data1)
+pc1 = prcomp(data0, center = TRUE)
+summary(pc1)$importance[,1:4]
+@
+<<p1a, fig.pos="H", fig.height=4, fig.cap="Unemployment Rates by state">>=
+matplot(t(data0),type = "l", xlab = "Years", ylab = "Unemployment Rates")
+@ 
+ <<p1b, fig.pos="H", fig.height=4, fig.cap="Bi-plot including PR">>=
+plot(pc1$x[,1],pc1$x[,2] , xlab="PC1",ylab="PC2",type="n",lwd=2)
+text(pc1$x[,1],pc1$x[,2],labels=abbreviate(row.names(data1)),cex=0.7,lwd=2)
+@
+<<>>=
+data = data0[-40,]
+pc2 = prcomp(data, center = TRUE)
+summary(pc2)$importance[,1:4]
+@
+The screeplot in Figure \ref{fig:p1d} indicates that it is sufficient to hold on to 2 PCs.
+<<p1d, fig.pos="H", fig.height=4, fig.cap="Screeplot excluding PR">>=
+screeplot(pc2)
+@
+
+Finally, taking a look at the factor loadings in addition to look at
+the bi-plot in Figure \ref{fig:p1e} suggest that PC1 is essentially an
+average of all the months, while PC2 is positive over certain time
+time periods while negative over others. In additon, the variables are
+all very closely related to each other due to the small angles between
+them on the bi-plot.
+ <<p1e, fig.pos="H", fig.height=6, fig.cap="Bi-plot excluding PR">>=
+biplot(pc2)
+@
+
+To check the fit of the data we do a simple bootstrap and estimate the
+proportion of data explained by 2 variables. The center of
+the histogram is near 0.76, which indicates that the PCA is a good fit
+for the data.
+ <<p1f, fig.pos="H", fig.height=4, fig.cap="Histogram of Bootstrap">>=
+set.seed(12345)
+niter = 1000
+propexp = matrix(0,1000,1);
+for(i in 1:1000){
+    pc = prcomp(data[sample(nrow(data),size=51,replace=TRUE),])
+    propexp[i,1] = sum(pc$sdev[1:2]^2)/sum(pc$sdev^2)
+}
+hist(propexp, xlab = "Proportion explained by 2 PCs", ylab = "Frequency")
+@
+
+\paragraph{Problem 2:} This data set contains information about the
+chemical composition of wines. Perform PCA and comment on the results.
+
+\paragraph{Solution 2:} For this dataset $n>>p$. However, the units
+for the variables are different, which calls for doing PCA on the
+correlation matrix. Based on Figure \ref{fig:p2a}, we apply
+the log transform on the data to help stabilize it. However, a
+comparison with the unlog transformed data indicates that this only
+marginally improves the proportion explained. The screeplot in Figure
+\ref{fig:p2b} indicates that we should hold onto at least 3 PCs as
+well. Four could be appropriate too, if we wanted to explain at least
+70\% of the variance. By studying the factor loadings, we can see that
+PC1 is largely driven by Total.phenols, Falavanoids and
+OD280.OD315 while PC2 is Alcohol.content, Color.Intensity and Proline,
+PC3 is As and Alcalinity.in.ash while PC4 divies those with high
+Malic.acid and Proantocyanins against those with high Hue and Nonflavanoid.phenols.
+<<p2a, fig.pos="H", fig.height=4, fig.cap="Screeplot">>=
+data2 = read.csv("wine.csv", header=TRUE)
+data20 = (as.matrix(data2))
+matplot(t(data20),type = "l", xlab = "Variables", ylab = "Wines")
+data20 = log(as.matrix(data2))
+pc21 = prcomp(data20, center = TRUE, scale = TRUE)
+summary(pc21)$importance[,1:4]
+summary(pc21)$rotation[,1:4]
+@
+The screeplot in Figure \ref{fig:p1d} indicates that it is sufficient to hold on to 2 PCs.
+<<p2b, fig.pos="H", fig.height=4, fig.cap="Screeplot">>=
+screeplot(pc21)
+@
+
+
+ <<p2c, fig.pos="H", fig.height=6, fig.cap="Bi-plot">>=
+biplot(pc21)
+@
+
+\end{document}

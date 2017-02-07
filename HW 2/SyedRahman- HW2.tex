@@ -1,0 +1,177 @@
+% HW3 high dimensional data
+
+\documentclass[12pt, leqno]{article}
+\usepackage{amsfonts, amsmath, amssymb}
+\usepackage{amsthm}
+\usepackage{mathtools}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{mathrsfs}
+\usepackage{array} 
+\usepackage{rotating}
+\usepackage{rotating}
+\usepackage{booktabs}
+\usepackage{bbm}
+%\usepackage{babel}
+\providecommand{\abs}[1]{\lvert#1\rvert}
+\providecommand{\norm}[1]{\lVert#1\rVert}
+\newcommand{\macheps}{\epsilon_{\mbox{\scriptsize mach}}}
+\let\oldhat\hat
+\renewcommand{\vec}[1]{\mathbf{#1}}
+\renewcommand{\hat}[1]{\oldhat{{#1}}}
+\def\rp{\ensuremath \mathbb{R}^p}
+\def\rpp{\ensuremath \mathbb{R}^{p \times p}}
+\def\s{\ensuremath\Sigma}
+\def\om{\ensuremath\Omega}
+\def\pd{\ensuremath\mathbb{P}^+}
+\def\pg{\ensuremath\mathbb{P}_{{G}}}
+\def\E{\ensuremath\mathbb{E}}
+\def\normdist[#1]#2{\ensuremath \sim \mathcal{N} (#1,#2) }
+\def\ndist1{\ensuremath \sim \mathcal{N}  (\mu, \sigma)}
+\def\ndistvec{\ensuremath \sim \mathcal{N}_p ( {\mu},  {\Sigma})}
+\def\lra{\ensuremath\Leftrightarrow}
+\def\stackrel#1#2{\mathrel{\mathop{#2}\limits^{#1}}}
+\newcommand\ind{\protect\mathpalette{\protect\independenT}{\perp}}
+\def\independenT#1#2{\mathrel{\rlap{$#1#2$}\mkern2mu{#1#2}}}
+\makeatletter
+\newtheorem{thm}{Theorem}[]
+\newtheorem{lemma}{Lemma}[]
+\newtheorem{defn}[thm]{Definition}
+\newcommand{\sign}{\mathrm{sign}}
+\newcommand{\distas}[1]{\mathbin{\overset{#1}{\kern\z@\sim}}}%
+\newsavebox{\mybox}\newsavebox{\mysim}
+\newcommand{\dist}[1]{%
+  \savebox{\mybox}{\hbox{\kern3pt$\scriptstyle#1$\kern3pt}}%
+  \savebox{\mysim}{\hbox{$\sim$}}%
+  \mathbin{\overset{#1}{\kern\z@\resizebox{\wd\mybox}{\ht\mysim}{$\sim$}}}%
+}
+\makeatother
+
+\begin{document}
+\pagestyle{fancy}
+\lhead{Syed Rahman}
+\rhead{STA6707}
+
+\begin{center}
+{\large {\bf Homework 2 Partial Solutions}}
+\end{center}
+
+\paragraph{Problem 1:} For this problem, I was basically looking to
+see whether everyone just did a proper cross-validation to find the
+error rates, and that people weren't mixed up between apparent and
+true error rates. Comparions for 5 classifers are shown below. For
+$k-nn, k = 1$ gave the best results. 
+
+ \begin{table}[ht]
+\centering
+\begin{tabular}{rr}
+  \hline
+ & Accuracy \\ 
+  \hline
+RANDOM FORESTS & 0.99 \\ 
+  LDA & 0.99 \\ 
+  QDA & 0.99 \\ 
+  KNN & 0.77 \\ 
+  DECISION TREES & 0.88 \\ 
+   \hline
+\end{tabular}
+\end{table}
+
+\newpage
+
+\paragraph{Problem 2:} For this problem, we follow a similar procedure
+using 10-fold cross validation (although the sample size is large
+enough to avoid such a method). Comparions for 5 classifers are shown below. For
+$k-nn, k = 1$ gave the best results. 
+
+Random Forests give the best results for Region. Qda seems to be the best for Area. At this point we could simplt use random forests for predicting
+regions and Qda for predicting Area, but we adopt a different
+approach. For our predictions, we use the most common one amongst all
+classifiers. There is one inconsistency between area/region, which is
+observation six. 
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{rr}
+  \hline
+ & Accuracy \\ 
+  \hline
+RANDOM FORESTS & 1.00 \\ 
+  LDA & 0.99 \\ 
+  QDA & 1.00 \\ 
+  KNN & 0.97 \\ 
+  DECISION TREES & 0.99 \\ 
+   \hline
+\end{tabular}
+\caption{Accuracy for Region}
+\end{table}
+
+% latex table generated in R 3.1.2 by xtable 1.7-4 package
+% Thu Mar 17 16:35:14 2016
+\begin{table}[ht]
+\centering
+\begin{tabular}{rr}
+  \hline
+ & Accuracy \\ 
+  \hline
+RANDOM FORESTS & 0.95 \\ 
+  LDA & 0.94 \\ 
+  QDA & 0.97 \\ 
+  KNN & 0.92 \\ 
+  DECISION TREES & 0.90 \\ 
+   \hline
+\end{tabular}
+\caption{Accuracty for Area}
+\end{table}
+
+\begin{table}[ht]
+\centering
+\resizebox{\textwidth}{!}{
+\begin{tabular}{rrrrrrrrrrrrrrrrrrrrr}
+  \hline
+ & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & 16 & 17 & 18 & 19 & 20 \\ 
+  \hline
+RANDOM FORESTS & 3.00 & 1.00 & 2.00 & 1.00 & 3.00 & 1.00 & 1.00 & 1.00 & 3.00 & 1.00 & 2.00 & 3.00 & 3.00 & 3.00 & 1.00 & 1.00 & 1.00 & 3.00 & 1.00 & 3.00 \\ 
+  LDA & 3.00 & 1.00 & 2.00 & 1.00 & 3.00 & 3.00 & 1.00 & 3.00 & 3.00 & 1.00 & 2.00 & 3.00 & 2.00 & 3.00 & 1.00 & 1.00 & 3.00 & 3.00 & 1.00 & 3.00 \\ 
+  QDA & 1.00 & 1.00 & 2.00 & 1.00 & 3.00 & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 & 2.00 & 2.00 & 3.00 & 2.00 & 1.00 & 1.00 & 1.00 & 3.00 & 1.00 & 3.00 \\ 
+  KNN & 3.00 & 1.00 & 2.00 & 1.00 & 3.00 & 3.00 & 1.00 & 1.00 & 3.00 & 1.00 & 2.00 & 3.00 & 3.00 & 3.00 & 1.00 & 1.00 & 3.00 & 3.00 & 1.00 & 3.00 \\ 
+  DECISION TREES & 3.00 & 1.00 & 3.00 & 1.00 & 3.00 & 1.00 & 1.00 & 1.00 & 3.00 & 1.00 & 3.00 & 3.00 & 3.00 & 3.00 & 1.00 & 1.00 & 1.00 & 3.00 & 1.00 & 3.00 \\ 
+  MODE & 3.00 & 1.00 & 2.00 & 1.00 & 3.00 & 1.00 & 1.00 & 1.00 & 3.00 & 1.00 & 2.00 & 3.00 & 3.00 & 3.00 & 1.00 & 1.00 & 1.00 & 3.00 & 1.00 & 3.00 \\ 
+   \hline
+\end{tabular}
+}
+\caption{Predictions for region}
+\end{table}
+
+% latex table generated in R 3.1.2 by xtable 1.7-4 package
+% Thu Mar 17 16:53:41 2016
+\begin{table}[ht]
+\centering
+\resizebox{\textwidth}{!}{
+\begin{tabular}{rrrrrrrrrrrrrrrrrrrrr}
+  \hline
+ & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & 16 & 17 & 18 & 19 & 20 \\ 
+  \hline
+RANDOM FORESTS & 8.00 & 3.00 & 5.00 & 4.00 & 7.00 & 9.00 & 4.00 & 1.00 & 9.00 & 3.00 & 6.00 & 9.00 & 8.00 & 9.00 & 3.00 & 3.00 & 3.00 & 8.00 & 3.00 & 7.00 \\ 
+  LDA & 8.00 & 2.00 & 5.00 & 3.00 & 7.00 & 9.00 & 2.00 & 9.00 & 7.00 & 3.00 & 9.00 & 9.00 & 8.00 & 7.00 & 2.00 & 2.00 & 8.00 & 8.00 & 3.00 & 7.00 \\ 
+  QDA & 8.00 & 4.00 & 5.00 & 3.00 & 7.00 & 2.00 & 1.00 & 3.00 & 8.00 & 3.00 & 5.00 & 8.00 & 8.00 & 8.00 & 3.00 & 4.00 & 5.00 & 8.00 & 3.00 & 7.00 \\ 
+  KNN & 8.00 & 3.00 & 5.00 & 4.00 & 7.00 & 9.00 & 3.00 & 1.00 & 9.00 & 3.00 & 5.00 & 9.00 & 8.00 & 9.00 & 3.00 & 3.00 & 8.00 & 8.00 & 3.00 & 7.00 \\ 
+  DECISION TREES & 7.00 & 3.00 & 7.00 & 2.00 & 7.00 & 1.00 & 3.00 & 1.00 & 9.00 & 5.00 & 7.00 & 9.00 & 8.00 & 9.00 & 3.00 & 3.00 & 3.00 & 8.00 & 3.00 & 7.00 \\ 
+  MODE & 8.00 & 3.00 & 5.00 & 4.00 & 7.00 & 9.00 & 3.00 & 1.00 & 9.00 & 3.00 & 5.00 & 9.00 & 8.00 & 9.00 & 3.00 & 3.00 & 3.00 & 8.00 & 3.00 & 7.00 \\ 
+   \hline
+\end{tabular}
+}
+\caption{Predictions for area}
+\end{table}
+
+
+
+ 
+
+
+
+\end{document}
